@@ -1,8 +1,6 @@
 import requests
 import os
 import re
-import json
-import ast
 import subprocess
 import time
 
@@ -17,7 +15,6 @@ def version_check(): # decides whether a new version is available.
         curvers = curver.readline() # reads the epoch date from the file to compare to the API
     plx_api = 'https://plex.tv/api/downloads/1.json?channel=plexpass'  # plex API returns JSON with downloads
     data = requests.get(plx_api).json()  # pulls in the JSON response from plex
-    # data = json.dump(data) # this to get rid of indices should be int not str
     nversdate = data['computer']['Linux']['release_date'] # pulls the API advertised epoch date for new version
     nvers = data['computer']['Linux']['version'] # pulls actual version number
     if nversdate > curvers: # compares epoch from API to the one for the current version
