@@ -12,15 +12,15 @@ def logging(message):  # Simple log file with time/date stamps
 
 def version_check(): # decides whether a new version is available.
     with open('/home/bukarubonzai/plexfiles2/updater/vercur.txt', 'r') as curver: # current version release epoch
-        curvers = curver.readline() # reads the epoch date from the file to compare to the API
+        curvers = int(curver.readline()) # reads the epoch date from the file to compare to the API. Cast to int for compare
     plx_api = 'https://plex.tv/api/downloads/1.json?channel=plexpass'  # plex API returns JSON with downloads
     data = requests.get(plx_api).json()  # pulls in the JSON response from plex
-    nversdate = data['computer']['Linux']['release_date'] # pulls the API advertised epoch date for new version
+    nversdate = int(data['computer']['Linux']['release_date']) # pulls the API advertised epoch date for new version. Cast to int for compare
     nvers = data['computer']['Linux']['version'] # pulls actual version number
-    if nversdate > curvers: # compares epoch from API to the one for the current version
+    if nversdate  > curvers: # compares epoch from API to the one for the current version
         logging('New Version Found %s' % nvers) # adds new version to the log
         with open('/home/bukarubonzai/plexfiles2/updater/vercur.txt', 'w') as new:
-            new.write(nversdate) # updating current version with new version epoch date
+            new.write(str(nversdate)) # updating current version with new version epoch date
         get_download(data) # move to download installation file
     else:
         logging('No Update Required.')
