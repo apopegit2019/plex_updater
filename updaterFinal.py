@@ -16,13 +16,9 @@ def version_check():  # decides whether a new version is available.
             curver.readline())  # reads the epoch date from the file to compare to the API. Cast to int for compare
     plx_api = 'https://plex.tv/api/downloads/1.json?channel=plexpass'  # plex API returns JSON with downloads
     data = requests.get(plx_api).json()  # pulls in the JSON response from plex
-    for item1 in data['computer']['Linux']['releases']:
-        if item1['distro'] == 'debian' and item1['build'] == 'linux-x86_64':
-            nversdate = int(item1['release_date'])  # pulls the API advertised epoch date for new version.
+    nversdate = int(data['computer']['Linux']['release_date'])  # pulls the API advertised epoch date for new version.
             # Cast to int for compare
-            nvers = item1['version']  # pulls actual version number
-        else:
-            pass
+    nvers = data['computer']['Linux']['version']  # pulls actual version number
     if nversdate > curvers:  # compares epoch from API to the one for the current version
         logging('New Version Found %s' % nvers)  # adds new version to the log
         with open('/home/bukarubonzai/plexfiles2/updater/vercur.txt', 'w') as new:
