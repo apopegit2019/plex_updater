@@ -29,7 +29,8 @@ def version_check(): # decides whether a new version is available.
 
 def get_download(data): # grab download installation file
     installDir = '/home/bukarubonzai/plexfiles2/updater/' # directory where the file will be downloaded
-    linux_64 = data['computer']['Linux']['releases'][0]  # specifically nabs the Ubuntu 64 bit part of json response
+    linux_64 = data['computer']['Linux']['releases'][1]  # specifically nabs the Ubuntu 64 bit part of json response
+    print(linux_64)
     download_url = linux_64['url']  # just saving the URL to a variable for simplicity later
     if linux_64['build'] == 'linux-ubuntu-x86_64':  # Checks to make sure I did, in fact, get Ubuntu 64 bit
         os.chdir(installDir) # move to the installation directory
