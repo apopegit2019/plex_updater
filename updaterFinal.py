@@ -38,8 +38,7 @@ def get_download(data):  # grab download installation file
             logging('Download Starting: %s' % download_url)
             try:
                 subprocess.check_call(['wget', download_url])  # downloads current version
-            except as dlexcept:
-                logging('Error: ' + dlexcept + '\n')
+            except:
                 logging('Download Failed \n')
             install(download_url, installDir)  # moving to installation
         else:
