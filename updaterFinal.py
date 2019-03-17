@@ -16,9 +16,13 @@ def version_check():  # decides whether a new version is available.
             curver.readline())  # reads the epoch date from the file to compare to the API. Cast to int for compare
     plx_api = 'https://plex.tv/api/downloads/1.json?channel=plexpass'  # plex API returns JSON with downloads
     data = requests.get(plx_api).json()  # pulls in the JSON response from plex
-    nversdate = int(data['computer']['Linux'][
-                        'release_date'])  # pulls the API advertised epoch date for new version. Cast to int for compare
-    nvers = data['computer']['Linux']['version']  # pulls actual version number
+    for item1 in data['computer']['Linux']['releases']:
+        if item1['distro'] == 'debian' and item1['build'] == 'linux-x86_64':
+            nversdate = int(item1['release_date'])  # pulls the API advertised epoch date for new version.
+            # Cast to int for compare
+            nvers = item1['version']  # pulls actual version number
+        else:
+            pass
     if nversdate > curvers:  # compares epoch from API to the one for the current version
         logging('New Version Found %s' % nvers)  # adds new version to the log
         with open('/home/bukarubonzai/plexfiles2/updater/vercur.txt', 'w') as new:
@@ -31,17 +35,19 @@ def version_check():  # decides whether a new version is available.
 
 def get_download(data):  # grab download installation file
     installDir = '/home/bukarubonzai/plexfiles2/updater/'  # directory where the file will be downloaded
-    linux_64 = data['computer']['Linux']['releases'][1]  # specifically nabs the Ubuntu 64 bit part of json response
-    print(linux_64)
-    download_url = linux_64['url']  # just saving the URL to a variable for simplicity later
-    if linux_64['build'] == 'linux-ubuntu-x86_64':  # Checks to make sure I did, in fact, get Ubuntu 64 bit
-        os.chdir(installDir)  # move to the installation directory
-        logging('Download Starting: %s' % download_url)
-        subprocess.check_call(['wget', download_url])  # downloads current version
-        install(download_url, installDir)  # moving to installation
-    else:
-        logging('Possible Plex API update. Wrong OS version captured.')
-        exit()
+    for item in data:
+        if item['distro'] == 'debian' and item['build'] == 'linux-x86_64':
+            download_url = item['url']  # just saving the URL to a variable for simplicity later
+            os.chdir(installDir)  # move to the installation directory
+            logging('Download Starting: %s' % download_url)
+            try:
+                subprocess.check_call(['wget', download_url])  # downloads current version
+            except as dlexcept:
+                logging('Error: ' + dlexcept + '\n')
+                logging('Download Failed \n')
+            install(download_url, installDir)  # moving to installation
+        else:
+            pass
 
 
 def install(download_url, installDir):
