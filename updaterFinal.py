@@ -31,7 +31,7 @@ def version_check():  # decides whether a new version is available.
 
 def get_download(data):  # grab download installation file
     installDir = '/home/bukarubonzai/plexfiles2/updater/'  # directory where the file will be downloaded
-    for item in data:
+    for item in data['compueter']['Linux']['releases']:
         if item['distro'] == 'debian' and item['build'] == 'linux-x86_64':
             download_url = item['url']  # just saving the URL to a variable for simplicity later
             os.chdir(installDir)  # move to the installation directory
