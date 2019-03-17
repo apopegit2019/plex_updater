@@ -36,7 +36,11 @@ def get_download(data): # grab download installation file
         os.chdir(installDir) # move to the installation directory
         logging('Download Starting: %s' % download_url)
         subprocess.check_call(['wget', download_url])  # downloads current version
-    install(download_url, installDir) # moving to installation
+        install(download_url, installDir)  # moving to installation
+    else:
+        logging('Possible Plex API update. Wrong OS version captured.')
+        exit()
+
 
 
 def install(download_url, installDir):
