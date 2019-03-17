@@ -31,15 +31,15 @@ def version_check():  # decides whether a new version is available.
 
 def get_download(data):  # grab download installation file
     installDir = '/home/bukarubonzai/plexfiles2/updater/'  # directory where the file will be downloaded
-    for item in data['compueter']['Linux']['releases']:
+    for item in data['computer']['Linux']['releases']:
         if item['distro'] == 'debian' and item['build'] == 'linux-x86_64':
             download_url = item['url']  # just saving the URL to a variable for simplicity later
             os.chdir(installDir)  # move to the installation directory
             logging('Download Starting: %s' % download_url)
             try:
                 subprocess.check_call(['wget', download_url])  # downloads current version
-            except:
-                logging('Download Failed \n')
+            except Exception as dlexcept:
+                logging('Download Failed: ' + str(dlexcept) + '\n')
             install(download_url, installDir)  # moving to installation
         else:
             pass
@@ -55,14 +55,14 @@ def install(download_url, installDir):
             subprocess.check_call(['dpkg', '-i', filepath])  # installs new version
             logging('Installation Complete')
         except Exception as ex:
-            logging('Error:\n' + ex)
+            logging('Error:\n' + str(ex) + '\n')
         try:
             os.remove(filepath)  # removes file after installation
             logging('Removing %s' % filepath)
         except Exception as rmex:
-            logging('Error:\n' + rmex)
+            logging('Error:\n' + str(rmex) + '\n')
     else:
-        logging('Something failed with the file path')
+        logging('Can\'t find installation file.')
         exit()
     exit()
 
