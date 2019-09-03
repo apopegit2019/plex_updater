@@ -21,8 +21,6 @@ def version_check():  # decides whether a new version is available.
     nvers = data['computer']['Linux']['version']  # pulls actual version number
     if nversdate > curvers:  # compares epoch from API to the one for the current version
         logging('New Version Found %s' % nvers)  # adds new version to the log
-        with open('/home/bukarubonzai/plexfiles2/updater/vercur.txt', 'w') as new:
-            new.write(str(nversdate))  # updating current version with new version epoch date
         get_download(data)  # move to download installation file
     else:
         logging('No Update Required.')
@@ -40,12 +38,12 @@ def get_download(data):  # grab download installation file
                 subprocess.check_call(['wget', download_url])  # downloads current version
             except Exception as dlexcept:
                 logging('Download Failed: ' + str(dlexcept) + '\n')
-            install(download_url, installDir)  # moving to installation
+            install(download_url, installDir, data)  # moving to installation
         else:
             pass
 
 
-def install(download_url, installDir):
+def install(download_url, installDir, data):
     pattern = re.compile(r'(plexmediaserver.*)')  # pattern to find file name from download URL
     fileName = pattern.findall(download_url)  # pulls the file name out of the URL
     filepath = os.path.join(installDir, fileName[0])  # creates the file path to the installation file
@@ -59,6 +57,15 @@ def install(download_url, installDir):
         try:
             os.remove(filepath)  # removes file after installation
             logging('Removing %s' % filepath)
+            subprocess.check_call(['service', 'plexmediaserver', 'restart'])
+            # added service restart so new version will show up. 
+            nversdate = int(data['computer']['Linux']['release_date'])
+            # pulls the API advertised epoch date for new version.
+            # Cast to int for compare
+            with open('/home/bukarubonzai/plexfiles2/updater/vercur.txt', 'w') as new:
+                new.write(str(nversdate))
+            # updating current version with new version epoch date. Moved after final removal to prevent updating
+            # before successful installation.
         except Exception as rmex:
             logging('Error:\n' + str(rmex) + '\n')
     else:
