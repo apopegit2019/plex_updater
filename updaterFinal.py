@@ -52,13 +52,6 @@ def install(download_url, installDir, data):
         try:
             subprocess.check_call(['dpkg', '-i', filepath])  # installs new version
             logging('Installation Complete')
-        except Exception as ex:
-            logging('Error:\n' + str(ex) + '\n')
-        try:
-            os.remove(filepath)  # removes file after installation
-            logging('Removing %s' % filepath)
-            subprocess.check_call(['service', 'plexmediaserver', 'restart'])
-            # added service restart so new version will show up.
             nversdate = int(data['computer']['Linux']['release_date'])
             # pulls the API advertised epoch date for new version.
             # Cast to int for compare
@@ -66,6 +59,14 @@ def install(download_url, installDir, data):
                 new.write(str(nversdate))
             # updating current version with new version epoch date. Moved after final removal to prevent updating
             # before successful installation.
+        except Exception as ex:
+            logging('Error:\n' + str(ex) + '\n')
+        try:
+            os.remove(filepath)  # removes file after installation
+            logging('Removing %s' % filepath)
+            subprocess.check_call(['service', 'plexmediaserver', 'restart'])
+            logging('Service Restarted')
+            # added service restart so new version will show up.
         except Exception as rmex:
             logging('Error:\n' + str(rmex) + '\n')
     else:
